@@ -2,6 +2,40 @@
 
 A small React e-commerce demo app that displays products, supports user authentication (Firebase), a shopping cart, and orders. It uses Firestore as the primary data store and includes a local `src/utils/data.js` fallback dataset so the app works without a populated Firestore.
 
+## Tech Stack
+
+### Frontend
+- **React 18.2.0** - UI library for building user interfaces
+- **React Router DOM 6.9.0** - Client-side routing for single page application
+- **React Context API** - State management for authentication and products
+- **CSS Modules** - Component-scoped styling
+- **React Toastify 9.1.1** - Toast notifications for user feedback
+- **React Spinners 0.13.8** - Loading indicators and spinners
+
+### Backend & Database
+- **Firebase 9.23.0** - Backend-as-a-Service platform
+- **Firestore** - NoSQL document database for storing products and user carts
+- **Firebase Authentication** - User authentication and authorization
+
+### Development & Build Tools
+- **Create React App (react-scripts 5.0.1)** - React development environment and build tool
+- **Node.js & npm** - JavaScript runtime and package manager
+- **Git** - Version control system
+
+### Testing & Quality
+- **Jest** - JavaScript testing framework (via react-scripts)
+- **React Testing Library** - Testing utilities for React components
+- **ESLint** - Code linting and formatting
+
+### Additional Libraries
+- **Axios 1.3.4** - HTTP client for API requests
+- **Cypress 12.17.3** - End-to-end testing framework
+
+### Deployment Ready
+- **Environment Variables** - Secure configuration management
+- **Production Build** - Optimized bundle for deployment
+- **Static Hosting Compatible** - Works with Netlify, Vercel, GitHub Pages, etc.
+
 ## What this project does
 
 - Displays a product catalog (local data or Firestore).
