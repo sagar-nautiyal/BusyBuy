@@ -27,15 +27,16 @@ A small React e-commerce demo app that displays products, supports user authenti
   - `getProductsUsingProductIds(cart)` — improved to batch Firestore `in` queries (Firestore supports up to 10 values per `in` query). Falls back to local data when Firestore returns nothing or on error.
   - `getUserCartProducts(uid)` — safely reads a user's cart document and returns a consistent shape when the document does not exist.
 
-- `src/config/firebase.js` — contains Firebase config. Note: the repository currently contains the config values directly; consider moving sensitive keys into environment variables for production.
+- `src/config/firebase.js` — Firebase configuration that reads from environment variables for security. See `.env.example` for required variables.
 
 ## Fixes and improvements I made
 
-1. Corrected `storageBucket` in `src/config/firebase.js` to `busybuy-fe33d.appspot.com` (the previous value used an incorrect domain `firebasestorage.app`).
-2. Hardened `getUserCartProducts` to handle missing UID, Firestore errors, and missing documents — it now returns `{ docRef, data: null }` when the document doesn't exist.
-3. Upgraded `getProductsUsingProductIds` to split product ID lists into batches of 10 and perform multiple `in` queries to Firestore, because Firestore limits `in` to 10 elements. The function still falls back to the local `data` if Firestore returns no results or on error.
+1. **🔒 Security Fix:** Moved Firebase configuration to environment variables in `src/config/firebase.js`. All sensitive config values are now loaded from `.env` file instead of being hardcoded.
+2. Corrected `storageBucket` in Firebase config to use the correct `.appspot.com` domain.
+3. Hardened `getUserCartProducts` to handle missing UID, Firestore errors, and missing documents — it now returns `{ docRef, data: null }` when the document doesn't exist.
+4. Upgraded `getProductsUsingProductIds` to split product ID lists into batches of 10 and perform multiple `in` queries to Firestore, because Firestore limits `in` to 10 elements. The function still falls back to the local `data` if Firestore returns no results or on error.
 
-These are small, low-risk, backwards-compatible improvements.
+These are small, low-risk, backwards-compatible improvements with a major security enhancement.
 
 ## How to run (development)
 
@@ -72,10 +73,33 @@ npm start
 
 ## Firebase setup
 
-The project currently includes a Firebase configuration in `src/config/firebase.js`. For production or public repos you should avoid committing API keys in source control. Recommended approach:
+**🔒 Security Note:** Firebase configuration has been moved to environment variables for security.
 
-- Replace the config there with environment variables. For example, use a `.env` file with `REACT_APP_FIREBASE_API_KEY=...` and reference `process.env.REACT_APP_FIREBASE_API_KEY` in the config.
+### Setup Steps:
 
+1. **Copy the environment template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Fill in your Firebase config values in `.env`:**
+   - Go to your Firebase Console → Project Settings → General tab
+   - Scroll down to "Your apps" section 
+   - Copy the config values and paste them into `.env`
+
+3. **The `.env` file should look like:**
+   ```env
+   REACT_APP_FIREBASE_API_KEY=your_actual_api_key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   REACT_APP_FIREBASE_APP_ID=your_app_id
+   ```
+
+**Important:** Never commit the `.env` file to version control. It's already included in `.gitignore`.
+
+### Firestore Security Rules
 - Secure your Firestore rules so that only authenticated users can read/write their own carts and only admin users can seed the `products` collection.
 
 Seeding Firestore products
@@ -86,11 +110,11 @@ Seeding Firestore products
 
 - ✅ Build verified: I successfully ran `npm install` and `npm run build` using Command Prompt. The project builds without errors and creates an optimized production build in the `build/` folder.
 
-- Firebase config values are present in plaintext in `src/config/firebase.js`. While Firebase API keys are not secret by themselves, it's better to place them in environment variables and secure Firestore rules.
+- ✅ Security: Firebase configuration has been moved to environment variables. The `.env` file is excluded from version control to protect sensitive configuration values.
 
 ## Next steps (suggested)
 
-- Move Firebase config into environment variables and update `src/config/firebase.js` to read from `process.env`.
+- Set up Firestore security rules to restrict access appropriately.
 - Add a small `scripts/seed-firestore.js` (Node script) or a secure admin-only route to seed the `products` collection using `addDataToCollection()`.
 - Add unit tests for utilities in `src/utils` and snapshot tests for main components.
 - Add CI (GitHub Actions) that runs `npm ci` and `npm run build` to verify changes in PRs.
